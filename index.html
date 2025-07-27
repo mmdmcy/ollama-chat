@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollama Chat Interface</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+        <div id="app" data-theme="ember-dark" class="app-container"">
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="settings-modal hidden">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2><i class="fas fa-cog"></i> User Preferences</h2>
+                    <button class="close-settings" onclick="closeUserSettings()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="settings-body">
+                    <div class="setting-group">
+                        <h3>Appearance</h3>
+                        <div class="setting-item">
+                            <label for="settingsThemeSelect"><i class="fas fa-palette"></i> Theme</label>
+                            <select id="settingsThemeSelect">
+                                <option value="aurora-dark">Aurora Dark</option>
+                                <option value="aurora">Aurora Light</option>
+                                <option value="coral-dark">Coral Dark</option>
+                                <option value="coral">Coral Light</option>
+                                <option value="cosmic-dark">Cosmic Dark</option>
+                                <option value="cosmic">Cosmic Light</option>
+                                <option value="ember-dark">Ember Dark</option>
+                                <option value="ember">Ember Light</option>
+                                <option value="contrast-dark">High Contrast Dark</option>
+                                <option value="contrast">High Contrast Light</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="fontSizeSelect"><i class="fas fa-text-height"></i> Font Size</label>
+                            <select id="fontSizeSelect">
+                                <option value="small">Small</option>
+                                <option value="medium">Medium</option>
+                                <option value="large">Large</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="readingDirectionSelect"><i class="fas fa-align-left"></i> Reading Direction</label>
+                            <select id="readingDirectionSelect">
+                                <option value="ltr">Left to Right</option>
+                                <option value="rtl">Right to Left</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Chat Behavior</h3>
+                        <div class="setting-item">
+                            <label for="settingsModelSelect"><i class="fas fa-robot"></i> Default Model</label>
+                            <select id="settingsModelSelect">
+                                <option value="loading">Loading models...</option>
+                            </select>
+                        </div>
+                        <div class="setting-item checkbox-item">
+                            <label>
+                                <input type="checkbox" id="showTimestamps">
+                                <i class="fas fa-clock"></i> Show Message Timestamps
+                            </label>
+                        </div>
+                        <div class="setting-item checkbox-item">
+                            <label>
+                                <input type="checkbox" id="showThinking">
+                                <i class="fas fa-brain"></i> Show Thinking Process
+                            </label>
+                        </div>
+                        <div class="setting-item checkbox-item">
+                            <label>
+                                <input type="checkbox" id="compactMode">
+                                <i class="fas fa-compress"></i> Compact Mode
+                            </label>
+                        </div>
+                        <div class="setting-item checkbox-item">
+                            <label>
+                                <input type="checkbox" id="autoSave">
+                                <i class="fas fa-save"></i> Auto-save Conversations
+                            </label>
+                        </div>
+                        <div class="setting-item checkbox-item">
+                            <label>
+                                <input type="checkbox" id="useConversationContext">
+                                <i class="fas fa-history"></i> Use Conversation Context
+                            </label>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Data Management</h3>
+                        <div class="setting-item">
+                            <button onclick="exportChatHistory()" class="export-btn">
+                                <i class="fas fa-download"></i> Export Chat History
+                            </button>
+                            <button onclick="exportPreferences()" class="export-btn">
+                                <i class="fas fa-cog"></i> Export Settings
+                            </button>
+                        </div>
+                        <div class="setting-item">
+                            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importChatHistory(event)">
+                            <button onclick="document.getElementById('importFile').click()" class="import-btn">
+                                <i class="fas fa-upload"></i> Import Chat History
+                            </button>
+                        </div>
+                        <div class="setting-item">
+                            <button onclick="clearAllData()" class="clear-btn" style="background-color: #dc3545; color: white;">
+                                <i class="fas fa-trash"></i> Clear All Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-footer">
+                    <button class="btn-secondary" onclick="resetToDefaults()">
+                        <i class="fas fa-undo"></i> Reset to Defaults
+                    </button>
+                    <button class="btn-primary" onclick="closeUserSettings()">
+                        <i class="fas fa-check"></i> Done
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" onclick="startNewChat()">
+                    <i class="fas fa-plus"></i>
+                    <span>New Chat</span>
+                </button>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chat-history">
+                <div class="chat-history-header">Today</div>
+                <div class="chat-list" id="chatList">
+                    <!-- Chat history items will be dynamically added here -->
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="setting-item">
+                    <label for="themeSelect"><i class="fas fa-palette"></i> Theme</label>
+                    <select id="themeSelect" onchange="changeTheme()">
+                        <option value="aurora-dark">Aurora Dark</option>
+                        <option value="aurora">Aurora Light</option>
+                        <option value="coral-dark">Coral Dark</option>
+                        <option value="coral">Coral Light</option>
+                        <option value="cosmic-dark">Cosmic Dark</option>
+                        <option value="cosmic">Cosmic Light</option>
+                        <option value="ember-dark">Ember Dark</option>
+                        <option value="ember">Ember Light</option>
+                        <option value="contrast-dark">High Contrast Dark</option>
+                        <option value="contrast">High Contrast Light</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="modelSelect"><i class="fas fa-cogs"></i> Model</label>
+                    <select id="modelSelect" onchange="changeModel()">
+                        <option value="loading">Loading models...</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <button class="settings-btn" onclick="openUserSettings()">
+                        <i class="fas fa-user-cog"></i> User Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="chat-header">
+                <div class="mobile-header">
+                     <button class="sidebar-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="model-selector-header" onclick="toggleModelSelector()">
+                        <span id="currentModelHeaderMobile">Ollama</span>
+                    </div>
+                    <button class="new-chat-header-btn" onclick="startNewChat()">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chat-container" id="chatContainer">
+                <div class="welcome-screen">
+                    <div class="logo-container">
+                        <h1 class="main-logo">Ollama</h1>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <div class="input-area-inner">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="messageInput" 
+                            placeholder="Message Ollama..." 
+                            rows="1"
+                            onkeypress="handleKeyPress(event)"
+                            oninput="autoResize(this)"
+                        ></textarea>
+                        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                            <i class="fas fa-arrow-up"></i>
+                        </button>
+                        <button class="cancel-btn" id="cancelBtn" onclick="cancelGeneration()" style="display: none;">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                    </div>
+                    <div class="footer-text">
+                        Ollama can make mistakes. Consider checking important information.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
