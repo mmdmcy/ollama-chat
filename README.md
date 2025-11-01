@@ -81,7 +81,7 @@ A modern, responsive web-based GUI for Ollama that provides a ChatGPT-like exper
 
 1. **Run the launcher**
    ```bash
-   cd /home/thorfinn/Documents/GitHub/ollama-chat
+   cd /path/to/ollama-chat
    ./start.sh
    ```
    - Opens your default browser to `http://localhost:8000`
