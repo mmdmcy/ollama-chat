@@ -14,15 +14,18 @@ A modern, responsive web-based GUI for Ollama that provides a ChatGPT-like exper
 - **Cosmic**: Sleek interface with purple highlights 
 - **Ember**: Warm, professional look with orange accents 
 - **High Contrast**: Maximum accessibility with sharp contrasts
-- **Odysseus Dark (New Default)**: Deep navy dark mode with cyan accents matching the screenshot
+- **Odysseus Dark (Default)**: Deep navy dark mode with cyan accents
+- **Nebula Dark (New)**: Gradient multi-accent dark theme with depth/elevation
 
 ### 🤖 **Advanced AI Integration**
 - **Auto Model Detection**: Automatically discovers your installed Ollama models
 - **Real-time Streaming**: See responses as they're generated
-- **Thinking Visualization**: Live display of model reasoning process (supports `<think>` and `<thinking>` tags)
+- **Thinking Visualization**: Live reasoning display with collapsible panel (supports `<think>` / `<thinking>`)
 - **Smart Model Management**: Easy switching between available models
 - **Model Refresh**: Built-in option to refresh and detect new models
 - **Debug Console**: Comprehensive logging for troubleshooting
+- **Dev Stats**: Elapsed time, tokens, tokens/sec, timestamp, and model per message
+- **Model Capabilities Icons**: 👁️ Vision, 🛠️ Tools, 🤔 Thinking shown inline in the model selector (parsed from `ollama show`)
 
 ### 💬 **Chat Management**
 - **localStorage History**: Conversations stored securely in your browser
@@ -35,6 +38,7 @@ A modern, responsive web-based GUI for Ollama that provides a ChatGPT-like exper
 - **Timestamps**: Optional message timestamps
 - **Conversation Context Control**: Toggle whether AI remembers previous messages
 - **Optimized Spacing**: Reduced spacing between messages for better conversation flow
+- **Timeline Navigation (New)**: Right-edge clickable dot/dash timeline to jump to any message
 
 ### 📱 **Responsive Design & Customization**
 - **Mobile Optimized**: Collapsible sidebar with toggle functionality
@@ -47,6 +51,7 @@ A modern, responsive web-based GUI for Ollama that provides a ChatGPT-like exper
 - **Font Size Options**: Small, medium, and large text sizes
 - **Compact Mode**: Condensed view for power users
 - **Request Cancellation**: Stop generation mid-stream with abort functionality
+- **Smart Auto-Scroll**: Streams only auto-scroll when you’re near the bottom; sending a message jumps to latest
 
 ## 🚀 Quick Start
 
@@ -82,6 +87,8 @@ A modern, responsive web-based GUI for Ollama that provides a ChatGPT-like exper
    - Opens your default browser to `http://localhost:8000`
    - Starts a local web server (auto-picks the next free port if 8000 is busy)
    - Requires Python 3 (`sudo apt install python3`). If `xdg-open` is available, your browser opens automatically
+
+> Linux Support: The project includes a first-class `start.sh` launcher for Mint/Ubuntu/Debian and most distros. No Node setup required.
 
 ### Manual Setup
 
@@ -120,7 +127,7 @@ wairk/
   - Collapsible sidebar with chat history and settings
   - Main chat area with responsive header and toggle functionality
   - Input area with auto-resizing textarea and send button
-  - Theme and model selectors with refresh capability
+  - Theme and model selectors with refresh capability and capability icons
   - Comprehensive settings modal with user preferences
 - **Default Setup**: Starts with Odysseus Dark theme
 
@@ -128,9 +135,9 @@ wairk/
 - **Purpose**: Complete visual system with CSS variables for theming
 - **Architecture**:
   - CSS variables for easy theme switching
-  - 10 theme variants (5 bases × light/dark including High Contrast)
+  - Theme variants including new Nebula Dark (gradient, multi-accent)
   - Responsive breakpoints for mobile/desktop
-  - Animated thinking indicators and smooth transitions
+  - Animated thinking indicators, collapsible thinking panel, and smooth transitions
   - Advanced message bubble styling with code formatting
 - **Key Features**:
   - Smooth animations and hover effects
@@ -151,6 +158,9 @@ wairk/
   - `renderChatHistory()`: localStorage-based conversation management
   - `savePreferences()`: User settings persistence with comprehensive options
   - Theme and preference management with live updates
+  - Web Search Tool (optional): DuckDuckGo (no key) and Brave Search API support
+  - Model Capabilities parsing: calls `ollama show` (via HTTP) to decorate the model list with 👁️/🛠️/🤔 icons
+  - Timeline navigation and auto-scroll logic
 
 ### 🚀 **start.bat**
 - **Purpose**: One-click launcher for Windows users
@@ -164,6 +174,41 @@ wairk/
 - **Contents**: Project description, version, and development info
 
 ## 🛠 How It Works
+## 📎 Attachments & OCR (New)
+
+- Attach files via the paperclip in the input bar (multi-select supported)
+- Images are passed to vision-capable models via the `images` array
+- Text/Code files are embedded into your prompt as fenced blocks
+- PDF/DOCX/PPTX/XLSX/CSV are parsed client-side:
+  - PDF text via pdf.js (falls back to OCR if needed)
+  - DOCX via Mammoth
+  - PPTX via JSZip (extracts slide text)
+  - XLS/XLSX via SheetJS (CSV per sheet)
+  - Optional OCR via Tesseract (enable in Settings). OCR language: English, Dutch, or both (eng, nld, eng+nld)
+
+> Privacy note: All parsing happens locally in your browser; nothing is uploaded.
+
+## 🌐 Web Search Tool (Optional)
+
+- Enable in Settings → Thinking & Tools
+- Engines:
+  - DuckDuckGo Instant Answer API (no key)
+  - Brave Search API (paste key in Settings)
+- Optional CORS proxy field (handy if your browser blocks direct requests)
+- During thinking, the model can emit `<search>query</search>` to trigger a search; top results appear above the response
+
+## 🧭 Timeline Navigation (New)
+
+- Right-side mini timeline with dots (you) and dashes (assistant)
+- Click any marker to jump to that point in the conversation
+- Highlights the nearest marker as you scroll; auto-scroll respects your manual position
+
+## 🔍 Model Capability Icons (New)
+
+- In the model selector, models show capabilities parsed from `ollama show`:
+  - 👁️ Vision  ·  🛠️ Tools  ·  🤔 Thinking
+- Labels update asynchronously once details are fetched
+
 
 ### 🔄 **Real-time Streaming Process**
 
