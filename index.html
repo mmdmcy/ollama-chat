@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-        <div id="app" data-theme="ember-dark" class="app-container"">
+        <div id="app" data-theme="odysseus-dark" class="app-container">
         <!-- Settings Modal -->
         <div id="settingsModal" class="settings-modal hidden">
             <div class="settings-content">
@@ -24,6 +24,8 @@
                         <div class="setting-item">
                             <label for="settingsThemeSelect"><i class="fas fa-palette"></i> Theme</label>
                             <select id="settingsThemeSelect">
+                                <option value="nebula-dark">Nebula Dark</option>
+                                <option value="odysseus-dark">Odysseus Dark</option>
                                 <option value="aurora-dark">Aurora Dark</option>
                                 <option value="aurora">Aurora Light</option>
                                 <option value="coral-dark">Coral Dark</option>
@@ -74,6 +76,20 @@
                         </div>
                         <div class="setting-item checkbox-item">
                             <label>
+                                <input type="checkbox" id="enableOCR">
+                                <i class="fas fa-eye"></i> Enable OCR for images/PDF pages
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="ocrLangSelect"><i class="fas fa-language"></i> OCR Language</label>
+                            <select id="ocrLangSelect">
+                                <option value="eng">English (eng)</option>
+                                <option value="nld">Dutch / Nederlands (nld)</option>
+                                <option value="eng+nld">English + Dutch (eng+nld)</option>
+                            </select>
+                        </div>
+                        <div class="setting-item checkbox-item">
+                            <label>
                                 <input type="checkbox" id="compactMode">
                                 <i class="fas fa-compress"></i> Compact Mode
                             </label>
@@ -89,6 +105,36 @@
                                 <input type="checkbox" id="useConversationContext">
                                 <i class="fas fa-history"></i> Use Conversation Context
                             </label>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Thinking & Tools</h3>
+                        <div class="setting-item checkbox-item">
+                            <label>
+                                <input type="checkbox" id="collapseThinkingDefault">
+                                <i class="fas fa-compress-arrows-alt"></i> Collapse thinking by default
+                            </label>
+                        </div>
+                        <div class="setting-item checkbox-item">
+                            <label>
+                                <input type="checkbox" id="enableWebSearch">
+                                <i class="fas fa-globe"></i> Enable Web Search Tool
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="searchEngineSelect"><i class="fas fa-search"></i> Search Engine</label>
+                            <select id="searchEngineSelect">
+                                <option value="duckduckgo">DuckDuckGo (no key)</option>
+                                <option value="brave">Brave Search API</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="braveApiKey"><i class="fas fa-key"></i> Brave API Key</label>
+                            <input type="password" id="braveApiKey" placeholder="paste key here">
+                        </div>
+                        <div class="setting-item">
+                            <label for="searchProxy"><i class="fas fa-link"></i> CORS Proxy (optional)</label>
+                            <input type="text" id="searchProxy" placeholder="e.g. http://localhost:8787/proxy?url=">
                         </div>
                     </div>
                     <div class="setting-group">
@@ -138,7 +184,7 @@
             </div>
             
             <div class="chat-history">
-                <div class="chat-history-header">Today</div>
+                <div class="chat-history-header">Sessions</div>
                 <div class="chat-list" id="chatList">
                     <!-- Chat history items will be dynamically added here -->
                 </div>
@@ -148,6 +194,8 @@
                 <div class="setting-item">
                     <label for="themeSelect"><i class="fas fa-palette"></i> Theme</label>
                     <select id="themeSelect" onchange="changeTheme()">
+                        <option value="nebula-dark">Nebula Dark</option>
+                        <option value="odysseus-dark">Odysseus Dark</option>
                         <option value="aurora-dark">Aurora Dark</option>
                         <option value="aurora">Aurora Light</option>
                         <option value="coral-dark">Coral Dark</option>
@@ -161,10 +209,15 @@
                     </select>
                 </div>
                 <div class="setting-item">
-                    <label for="modelSelect"><i class="fas fa-cogs"></i> Model</label>
+                    <label for="modelSelect"><i class="fas fa-cogs"></i> Models (Ollama @ 11434)</label>
                     <select id="modelSelect" onchange="changeModel()">
                         <option value="loading">Loading models...</option>
                     </select>
+                    <div class="model-legend" style="margin-top:6px;color:var(--text-secondary);font-size:12px;">
+                        <span title="Vision">👁️ Vision</span> ·
+                        <span title="Tools">🛠️ Tools</span> ·
+                        <span title="Thinking">🤔 Thinking</span>
+                    </div>
                 </div>
                 <div class="setting-item">
                     <button class="settings-btn" onclick="openUserSettings()">
@@ -197,10 +250,16 @@
                     </div>
                 </div>
             </div>
+            <!-- Right-side timeline navigation -->
+            <div id="timelineNav" class="timeline-nav" title="Conversation timeline"></div>
             
             <div class="input-area">
                 <div class="input-area-inner">
                     <div class="input-wrapper">
+                        <button class="attach-btn" id="attachBtn" onclick="triggerFilePicker()" title="Attach files">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <input id="fileInput" type="file" multiple style="display: none;" onchange="handleFileSelection(event)">
                         <textarea 
                             id="messageInput" 
                             placeholder="Message Ollama..." 
@@ -215,6 +274,7 @@
                             <i class="fas fa-stop"></i>
                         </button>
                     </div>
+                    <div id="attachmentsPreview" class="attachments-preview"></div>
                     <div class="footer-text">
                         Ollama can make mistakes. Consider checking important information.
                     </div>
@@ -223,6 +283,17 @@
         </div>
     </div>
     
+    <!-- Document parsing libs for attachments -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        if (window['pdfjsLib']) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+    </script>
+    <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

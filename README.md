@@ -8,12 +8,13 @@ A modern, responsive web-based GUI for Ollama that provides a ChatGPT-like exper
 
 ## ✨ Features
 
-### 🎨 **10 Beautiful Themes** (Light & Dark variants)
+### 🎨 **Beautiful Themes** (Light & Dark variants)
 - **Aurora**: Clean, modern interface with green accents 
 - **Coral**: Elegant design with deep pink accents 
 - **Cosmic**: Sleek interface with purple highlights 
 - **Ember**: Warm, professional look with orange accents 
 - **High Contrast**: Maximum accessibility with sharp contrasts
+- **Odysseus Dark (New Default)**: Deep navy dark mode with cyan accents matching the screenshot
 
 ### 🤖 **Advanced AI Integration**
 - **Auto Model Detection**: Automatically discovers your installed Ollama models
@@ -71,6 +72,17 @@ A modern, responsive web-based GUI for Ollama that provides a ChatGPT-like exper
    - Open the interface in your browser
    - Handle everything automatically
 
+### Easy Setup (Linux Mint / Linux)
+
+1. **Run the launcher**
+   ```bash
+   cd /home/thorfinn/Documents/GitHub/ollama-chat
+   ./start.sh
+   ```
+   - Opens your default browser to `http://localhost:8000`
+   - Starts a local web server (auto-picks the next free port if 8000 is busy)
+   - Requires Python 3 (`sudo apt install python3`). If `xdg-open` is available, your browser opens automatically
+
 ### Manual Setup
 
 1. **Start Ollama** (if not already running):
@@ -94,9 +106,10 @@ A modern, responsive web-based GUI for Ollama that provides a ChatGPT-like exper
 ```
 wairk/
 ├── index.html          # Main application structure
-├── styles.css          # Complete styling system with 10 themes
+├── styles.css          # Complete styling system with themes (incl. Odysseus)
 ├── script.js           # Core application logic and API integration
 ├── start.bat           # Windows launcher script
+├── start.sh            # Linux Mint/Linux launcher script
 ├── package.json        # Project metadata
 └── README.md           # This documentation
 ```
@@ -109,7 +122,7 @@ wairk/
   - Input area with auto-resizing textarea and send button
   - Theme and model selectors with refresh capability
   - Comprehensive settings modal with user preferences
-- **Default Setup**: Starts with High Contrast Dark theme
+- **Default Setup**: Starts with Odysseus Dark theme
 
 ### 🎨 **styles.css**
 - **Purpose**: Complete visual system with CSS variables for theming
