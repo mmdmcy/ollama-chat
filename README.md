@@ -173,6 +173,28 @@ wairk/
 - **Purpose**: Project metadata and dependency information
 - **Contents**: Project description, version, and development info
 
+## 🏗️ Technical Architecture & Engineering
+
+This project is engineered as a high-performance, privacy-first Single Page Application (SPA) that interfaces directly with local AI models. It demonstrates advanced frontend capabilities without relying on heavy frameworks like React or Vue.
+
+### ⚡ Core Stack & Performance
+- **Vanilla JavaScript (ES6+)**: Zero-dependency architecture ensuring maximum performance and minimal bundle size (<150KB gzipped).
+- **Efficient DOM Manipulation**: Direct DOM updates using cached element selectors, avoiding virtual DOM overhead.
+- **CSS3 Variables & Flexbox/Grid**: Hardware-accelerated transitions and a robust theming utility that handles 10+ themes dynamically.
+
+### 🔄 Client-Side Architecture
+- **Local-First Design**: The application runs entirely in the browser. No intermediate backend server is required; it communicates directly with the local Ollama instance via CORS.
+- **State Management**: Custom state handling logic for chat history (`localStorage`), application preferences, and real-time UI states (thinking, generating).
+- **Asynchronous Stream Processing**: Utilizes the `fetch` API's `ReadableStream` interface to process LLM tokens in real-time, coupled with `AbortController` for immediate request cancellation.
+
+### 📄 Advanced Document Processing
+- **WASM-Powered Parsing**: Integrates WebAssembly and pure JS libraries (`pdf.js`, `mammoth`, `tesseract.js`) to parse complex documents (PDFs, DOCX, images) entirely within the browser.
+- **Privacy Assurance**: All file processing happens locally; user data never leaves the machine.
+
+### 🧩 Engineering Highlights
+- **Custom Markdown Rendering**: Implemented a lightweight, regex-based markdown parser with syntax highlighting support, removing the need for heavy parsing libraries.
+- **Robust Error Handling**: Comprehensive try-catch blocks and UI feedback mechanisms for network issues (CORS, offline models) and parsing errors.
+
 ## 🛠 How It Works
 ## 📎 Attachments & OCR (New)
 
