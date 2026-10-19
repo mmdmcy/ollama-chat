@@ -41,6 +41,7 @@ if command_exists xdg-open; then
 	xdg-open "$URL" >/dev/null 2>&1 || true
 fi
 
-exec "$PYTHON_BIN" -m http.server "$PORT"
+# Bind to localhost only; see README "Serving on your LAN" to expose it deliberately.
+exec "$PYTHON_BIN" -m http.server --bind 127.0.0.1 "$PORT"
 
 

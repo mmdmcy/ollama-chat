@@ -1544,7 +1544,8 @@ async function performWebSearch(query) {
         if (!userPreferences.braveApiKey) throw new Error('Brave API key missing');
         const base = 'https://api.search.brave.com/res/v1/web/search?q=' + encodeURIComponent(query);
         const url = proxy ? proxy + encodeURIComponent(base) : base;
-        const headers = proxy ? {} : { 'X-Subscription-Token': userPreferences.braveApiKey };
+        // The key header is sent through the CORS proxy too; the proxy must forward it to Brave.
+        const headers = { 'X-Subscription-Token': userPreferences.braveApiKey };
         const resp = await fetch(url, { headers });
         const data = await resp.json();
         const items = (data && data.web && data.web.results) ? data.web.results : [];

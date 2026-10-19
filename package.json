@@ -4,9 +4,9 @@
   "description": "Modern web-based GUI for Ollama with multiple themes",
   "main": "index.html",
   "scripts": {
-    "start": "http-server -p 8000 -o",
-    "dev": "http-server -p 8000 -o",
-    "serve": "python -m http.server 8000"
+    "start": "http-server -a 127.0.0.1 -p 8000 -o",
+    "dev": "http-server -a 127.0.0.1 -p 8000 -o",
+    "serve": "python -m http.server --bind 127.0.0.1 8000"
   },
   "keywords": [
     "ollama",

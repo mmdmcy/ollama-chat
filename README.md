@@ -100,13 +100,19 @@ A modern, responsive web-based GUI for Ollama that provides a ChatGPT-like exper
 2. **Start a local web server**:
    ```bash
    # Python (recommended)
-   python -m http.server 8000
+   python -m http.server --bind 127.0.0.1 8000
    
    # Or with Node.js
-   npx http-server -p 8000
+   npx http-server -a 127.0.0.1 -p 8000
    ```
 
 3. **Open in browser**: Navigate to `http://localhost:8000`
+
+**Serving on your LAN**: `start.sh`, `start.bat` and the npm scripts bind to
+`127.0.0.1`, so only this machine can open the app. To reach it from another
+device on purpose, drop `--bind 127.0.0.1` (or `-a 127.0.0.1`), e.g.
+`python -m http.server 8000`, and remember Ollama itself must then also accept
+remote requests (`OLLAMA_HOST=0.0.0.0` and `OLLAMA_ORIGINS`).
 
 ## 📁 File Structure & Components
 
@@ -216,7 +222,7 @@ This project is engineered as a high-performance, privacy-first Single Page Appl
 - Engines:
   - DuckDuckGo Instant Answer API (no key)
   - Brave Search API (paste key in Settings)
-- Optional CORS proxy field (handy if your browser blocks direct requests)
+- Optional CORS proxy field (handy if your browser blocks direct requests). The Brave API key is sent as the `X-Subscription-Token` header on the proxied request too, so the proxy must forward request headers to Brave
 - During thinking, the model can emit `<search>query</search>` to trigger a search; top results appear above the response
 
 ## 🧭 Timeline Navigation (New)
